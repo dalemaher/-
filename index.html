@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MAHER DELI — إدارة الديون</title>
+<meta name="theme-color" content="#0d9488">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --teal:#0d9488;
+    --teal-dark:#0f766e;
+    --teal-light:#14b8a6;
+    --bg-green:#ecfdf5;
+    --bg-green-border:#a7f3d0;
+    --bg-orange:#fffbeb;
+    --bg-orange-border:#fde68a;
+    --orange:#f59e0b;
+    --purple:#7c3aed;
+    --red:#f43f5e;
+    --bg-red:#fef2f2;
+    --bg-red-border:#fecdd3;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --card-bg:#ffffff;
+    --page-bg:#f7f9fa;
+    --shadow: 0 2px 10px rgba(15,23,42,0.06);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', Arial, sans-serif;
+    background: var(--page-bg);
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+    padding-bottom: 78px;
+  }
+  .app{ max-width: 480px; margin: 0 auto; min-height:100vh; background: var(--page-bg); position:relative;}
+
+  /* Header */
+  header.topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 18px 10px;
+    background:#fff;
+    position:sticky; top:0; z-index:20;
+    border-bottom: 1px solid #eef2f1;
+  }
+  header.topbar .side{ display:flex; gap:14px; align-items:center; }
+  header.topbar .icon-btn{
+    width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color: var(--teal); background:transparent; border:none; cursor:pointer;
+  }
+  header.topbar .icon-btn:active{ background:var(--bg-green); }
+  header.topbar h1{
+    font-size:1.35rem; color: var(--teal); font-weight:800;
+  }
+
+  main{ padding: 14px 16px 10px; }
+
+  .card{
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .card.green{ background: var(--bg-green); border:1px solid var(--bg-green-border); box-shadow:none;}
+  .card.orange-outline{ border:1.5px solid var(--bg-orange-border); box-shadow:none; }
+  .card.teal-outline{ border:1.5px solid var(--bg-green-border); box-shadow:none; }
+  .card.pink-outline{ border:1.5px solid var(--bg-red-border); box-shadow:none; }
+
+  .greet-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .greet-row h2{ font-size:1.15rem; font-weight:800; }
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:#fff; border-radius:14px; padding:12px 14px;
+    font-weight:700; width:100%;
+    justify-content:space-between;
+  }
+  .pill .check{ width:24px;height:24px;border-radius:50%; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px;}
+
+  .section-title{
+    display:flex; align-items:center; justify-content:flex-end; gap:8px;
+    margin-bottom:14px;
+  }
+  .badge-pill{
+    display:flex; align-items:center; gap:8px;
+    background: var(--bg-orange); border:1px solid var(--bg-orange-border);
+    color:#b45309; font-weight:800; border-radius:20px; padding:9px 16px; font-size:.95rem;
+  }
+  .badge-pill.teal{ background: var(--bg-green); border-color:var(--bg-green-border); color: var(--teal-dark);}
+  .badge-pill.pink{ background: var(--bg-red); border-color:var(--bg-red-border); color:#be123c;}
+
+  .tools-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .tool-btn{
+    background:#fff; border-radius:16px; padding:16px 6px; text-align:center;
+    border:1px solid #eef2f1; cursor:pointer;
+  }
+  .tool-btn .ic{
+    width:42px;height:42px;border-radius:50%; background:var(--bg-green); color:var(--teal);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:20px;
+  }
+  .tool-btn span{ font-size:.85rem; font-weight:700; color:#334155; }
+
+  .stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .stat-card{
+    background:#fff; border-radius:16px; padding:16px 12px; position:relative; overflow:hidden;
+    box-shadow: var(--shadow);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .stat-card .label{ font-weight:800; font-size:.85rem; }
+  .stat-card.red .label{ color:#e11d48; }
+  .stat-card.teal .label{ color: var(--teal-dark); }
+  .stat-card .val-row{ display:flex; align-items:center; justify-content:space-between; }
+  .stat-card .val{ font-size:1.4rem; font-weight:800; }
+  .stat-card .ic-round{ width:36px;height:36px;border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .stat-card.red .ic-round{ background:#f87171; }
+  .stat-card.teal .ic-round{ background: var(--teal); }
+
+  .list-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:#fff; border-radius:16px; padding:14px; margin-bottom:10px;
+    box-shadow: var(--shadow); cursor:pointer;
+  }
+  .list-row .left{ display:flex; align-items:center; gap:12px; }
+  .avatar{
+    width:44px;height:44px;border-radius:50%; background:var(--bg-green); color:var(--teal-dark);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; flex-shrink:0;
+  }
+  .avatar.red{ background:var(--bg-red); color:#e11d48; }
+  .list-row .name{ font-weight:800; font-size:.98rem; }
+  .list-row .sub{ font-size:.78rem; color:var(--muted); margin-top:2px; }
+  .list-row .amount{ font-weight:800; font-size:1rem; text-align:left; }
+  .list-row .amount.owe{ color:#e11d48; }
+  .list-row .amount.ok{ color:var(--teal-dark); }
+
+  .empty{
+    text-align:center; color:var(--muted); padding:30px 10px; font-size:.9rem;
+  }
+
+  /* Bottom nav */
+  nav.bottomnav{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:#fff; border-top:1px solid #eef2f1;
+    display:flex; justify-content:space-around; padding:8px 4px 10px;
+    max-width:480px; margin:0 auto;
+  }
+  nav.bottomnav button{
+    background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:#94a3b8; font-size:.68rem; font-weight:700; padding:4px 10px; cursor:pointer;
+  }
+  nav.bottomnav button .ic{ font-size:1.2rem; }
+  nav.bottomnav button.active{ color: var(--teal); }
+  nav.bottomnav button.addbtn .ic{
+    width:44px;height:44px;border-radius:50%; background:var(--teal); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-top:-22px;
+    box-shadow:0 4px 10px rgba(13,148,136,.4);
+  }
+
+  /* Views */
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  /* Modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:50;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .overlay.active{ display:flex; }
+  .sheet{
+    background:#fff; width:100%; max-width:480px; border-radius:22px 22px 0 0;
+    padding:20px 18px 26px; max-height:88vh; overflow-y:auto;
+    animation: slideup .22s ease-out;
+  }
+  @keyframes slideup{ from{ transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+  .sheet h3{ font-size:1.1rem; font-weight:800; margin-bottom:16px; color:var(--teal-dark); text-align:center;}
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:.85rem; font-weight:700; margin-bottom:6px; color:#334155;}
+  .field input, .field select, .field textarea{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid #e2e8f0;
+    font-size:.95rem; font-family:inherit; background:#f8fafc;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--teal); background:#fff; }
+  .row2{ display:flex; gap:10px; }
+  .row2 .field{ flex:1; }
+  .btn{
+    width:100%; padding:14px; border-radius:14px; border:none; font-weight:800; font-size:1rem;
+    cursor:pointer; margin-top:4px;
+  }
+  .btn.primary{ background: var(--teal); color:#fff; }
+  .btn.primary:active{ background: var(--teal-dark); }
+  .btn.danger{ background: var(--bg-red); color:#e11d48; }
+  .btn.outline{ background:#fff; border:1.5px solid #e2e8f0; color:#334155; }
+  .btn.pay{ background:#ecfdf5; color:var(--teal-dark); border:1.5px solid #a7f3d0; }
+  .btn.debt{ background:#fef2f2; color:#be123c; border:1.5px solid #fecdd3; }
+  .btn-row{ display:flex; gap:10px; margin-top:6px; }
+  .btn-row .btn{ margin-top:0; }
+  .close-x{
+    position:absolute; top:14px; left:14px; width:32px; height:32px; border-radius:50%;
+    background:#f1f5f9; border:none; color:#64748b; font-size:1.1rem; cursor:pointer;
+  }
+  .sheet-wrap{ position:relative; }
+
+  /* Client detail */
+  .detail-head{ text-align:center; padding:10px 0 18px; }
+  .detail-head .avatar{ width:64px;height:64px; font-size:1.6rem; margin:0 auto 10px; }
+  .detail-head h2{ font-size:1.2rem; font-weight:800; }
+  .detail-head .phone{ color:var(--muted); font-size:.85rem; margin-top:2px; }
+  .balance-box{ text-align:center; background:var(--bg-green); border:1px solid var(--bg-green-border); border-radius:16px; padding:16px; margin:14px 0;}
+  .balance-box.owing{ background:var(--bg-red); border-color:var(--bg-red-border); }
+  .balance-box .lbl{ font-size:.85rem; color:var(--muted); font-weight:700; }
+  .balance-box .num{ font-size:1.7rem; font-weight:800; margin-top:4px; }
+  .balance-box.owing .num{ color:#e11d48; }
+  .balance-box:not(.owing) .num{ color:var(--teal-dark); }
+  .mini-stats{ display:flex; gap:10px; margin-bottom:16px; }
+  .mini-stats .m{ flex:1; text-align:center; background:#fff; border:1px solid #eef2f1; border-radius:12px; padding:10px; }
+  .mini-stats .m .l{ font-size:.72rem; color:var(--muted); font-weight:700;}
+  .mini-stats .m .v{ font-size:1rem; font-weight:800; margin-top:3px;}
+  .txn-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 4px; border-bottom:1px solid #f1f5f9;}
+  .txn-row .txn-left{ display:flex; align-items:center; gap:10px; }
+  .txn-ic{ width:34px;height:34px;border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff;}
+  .txn-ic.pay{ background:var(--teal); }
+  .txn-ic.debt{ background:#f87171; }
+  .txn-row .txn-note{ font-weight:700; font-size:.88rem; }
+  .txn-row .txn-date{ font-size:.72rem; color:var(--muted); margin-top:2px; }
+  .txn-row .txn-amt{ font-weight:800; font-size:.9rem; }
+  .txn-amt.pay{ color:var(--teal-dark); }
+  .txn-amt.debt{ color:#e11d48; }
+
+  /* Search */
+  .searchbar{
+    display:flex; align-items:center; gap:8px; background:#fff; border:1.5px solid #e2e8f0;
+    border-radius:14px; padding:10px 14px; margin-bottom:14px;
+  }
+  .searchbar input{ border:none; outline:none; flex:1; font-size:.92rem; background:transparent; font-family:inherit; }
+
+  .toast{
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+    background:#0f172a; color:#fff; padding:10px 20px; border-radius:24px; font-size:.85rem;
+    z-index:100; opacity:0; transition:opacity .25s; font-weight:700; pointer-events:none;
+    max-width:90%; text-align:center;
+  }
+  .toast.show{ opacity:1; }
+
+  .calc-display{ background:#0f172a; color:#fff; padding:24px 18px; border-radius:16px; font-size:2rem; text-align:left; direction:ltr; margin-bottom:14px; font-weight:700; word-break:break-all;}
+  .calc-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .calc-grid button{
+    padding:18px 0; border-radius:14px; border:none; font-size:1.15rem; font-weight:800; cursor:pointer;
+    background:#f1f5f9; color:#0f172a;
+  }
+  .calc-grid button.op{ background: var(--bg-green); color: var(--teal-dark); }
+  .calc-grid button.eq{ background: var(--teal); color:#fff; }
+  .calc-grid button.clr{ background: var(--bg-red); color:#e11d48; }
+
+  ::-webkit-scrollbar{ width:0; height:0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="side" id="headerLeftIcons">
+      <button class="icon-btn" onclick="toggleAmountsVisible()" title="اخفاء/اظهار">👁️</button>
+      <button class="icon-btn" onclick="openLate()">🕓</button>
+    </div>
+    <button class="icon-btn" id="backBtn" style="display:none;" onclick="switchView('dashboard')">←</button>
+    <h1 id="pageTitle">لوحة التحكم</h1>
+    <div class="side">
+      <button class="icon-btn" onclick="openMenu()">☰</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <div class="view active" id="view-dashboard">
+      <div class="card green">
+        <div class="greet-row">
+          <h2 id="greetText">صباح الخير 👋</h2>
+        </div>
+        <div class="pill">
+          <span id="todayCollected">تحصيلات اليوم: IQD 0</span>
+          <span class="check">✓</span>
+        </div>
+      </div>
+
+      <div class="card orange-outline">
+        <div class="section-title">
+          <span class="badge-pill">🛠️ أدوات سريعة</span>
+        </div>
+        <div class="tools-grid">
+          <button class="tool-btn" onclick="openLate()">
+            <div class="ic">🕓</div>
+            <span>المتأخرون</span>
+          </button>
+          <button class="tool-btn" onclick="openAddClient()">
+            <div class="ic">➕</div>
+            <span>الاضافة</span>
+          </button>
+          <button class="tool-btn" onclick="openCalc()">
+            <div class="ic">🧮</div>
+            <span>الحاسبة</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card teal-outline">
+        <div class="section-title">
+          <span class="badge-pill teal">📊 ملخص الاحصائيات</span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card red">
+            <div class="label">إجمالي المدينين</div>
+            <div class="val-row">
+              <div class="ic-round">👥</div>
+              <div class="val" id="statDebtorsCount">0</div>
+            </div>
+          </div>
+          <div class="stat-card teal">
+            <div class="label">إجمالي العملاء</div>
+            <div class="val-row">
+              <div class="ic-round">👤</div>
+              <div class="val" id="statClientsCount">0</div>
+            </div>
+          </div>
+          <div class="stat-card red">
+            <div class="label">مبالغ المدينين</div>
+            <div class="val-row">
+              <div class="ic-round">🏦</div>
+              <div class="val" id="statDebtorsAmount">IQD 0</div>
+            </div>
+          </div>
+          <div class="stat-card teal">
+            <div class="label">مبالغ العملاء</div>
+            <div class="val-row">
+              <div class="ic-round">💳</div>
+              <div class="val" id="statClientsAmount">IQD 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <span class="badge-pill teal">✒️ تحصيلات العملاء</span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card teal">
+            <div class="label">هذا الشهر</div>
+            <div class="val-row">
+              <div class="ic-round">📅</div>
+              <div class="val" id="statMonthCollected">IQD 0</div>
+            </div>
+          </div>
+          <div class="stat-card teal">
+            <div class="label">هذا الأسبوع</div>
+            <div class="val-row">
+              <div class="ic-round">📈</div>
+              <div class="val" id="statWeekCollected">IQD 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <span class="badge-pill pink">💳 أكبر المدينين</span>
+        </div>
+        <div id="topDebtorsList"></div>
+      </div>
+    </div>
+
+    <!-- ===================== CLIENTS LIST ===================== -->
+    <div class="view" id="view-clients">
+      <div class="searchbar">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="ابحث عن عميل بالاسم أو الهاتف..." oninput="renderClientsList()">
+      </div>
+      <div id="clientsList"></div>
+    </div>
+
+    <!-- ===================== LATE / DEBTORS ===================== -->
+    <div class="view" id="view-late">
+      <div id="lateList"></div>
+    </div>
+
+    <!-- ===================== CLIENT DETAIL ===================== -->
+    <div class="view" id="view-detail">
+      <div class="detail-head">
+        <div class="avatar" id="detAvatar">?</div>
+        <h2 id="detName">—</h2>
+        <div class="phone" id="detPhone"></div>
+      </div>
+      <div class="balance-box" id="detBalanceBox">
+        <div class="lbl">الرصيد المتبقي</div>
+        <div class="num" id="detBalance">IQD 0</div>
+      </div>
+      <div class="mini-stats">
+        <div class="m"><div class="l">إجمالي الدين</div><div class="v" id="detTotalDebt">IQD 0</div></div>
+        <div class="m"><div class="l">المدفوع</div><div class="v" id="detTotalPaid">IQD 0</div></div>
+      </div>
+      <div class="btn-row" style="margin-bottom:16px;">
+        <button class="btn pay" onclick="openTxn('payment')">💵 تسجيل دفعة</button>
+        <button class="btn debt" onclick="openTxn('debt')">➕ إضافة دين</button>
+      </div>
+      <div class="btn-row" style="margin-bottom:16px;">
+        <button class="btn outline" onclick="editClient()">✏️ تعديل بيانات العميل</button>
+      </div>
+      <div class="card" style="padding:8px 14px;">
+        <div class="section-title" style="margin-top:10px;">
+          <span class="badge-pill teal">📋 سجل الحركات</span>
+        </div>
+        <div id="txnList"></div>
+      </div>
+      <button class="btn danger" onclick="deleteClient()" style="margin-top:16px;">🗑️ حذف العميل</button>
+    </div>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottomnav">
+    <button class="active" data-view="dashboard" onclick="switchView('dashboard')">
+      <span class="ic">🏠</span><span>الرئيسية</span>
+    </button>
+    <button data-view="late" onclick="switchView('late')">
+      <span class="ic">🕓</span><span>المتأخرون</span>
+    </button>
+    <button class="addbtn" onclick="openAddClient()">
+      <span class="ic">➕</span>
+    </button>
+    <button data-view="clients" onclick="switchView('clients')">
+      <span class="ic">👥</span><span>العملاء</span>
+    </button>
+    <button data-view="menu" onclick="openMenu()">
+      <span class="ic">☰</span><span>المزيد</span>
+    </button>
+  </nav>
+
+  <!-- ===================== ADD CLIENT SHEET ===================== -->
+  <div class="overlay" id="overlay-add">
+    <div class="sheet sheet-wrap">
+      <button class="close-x" onclick="closeOverlay('overlay-add')">✕</button>
+      <h3>إضافة عميل جديد</h3>
+      <div class="field">
+        <label>اسم العميل *</label>
+        <input type="text" id="addName" placeholder="مثال: أحمد محمد">
+      </div>
+      <div class="field">
+        <label>رقم الهاتف</label>
+        <input type="tel" id="addPhone" placeholder="07xxxxxxxxx">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>مبلغ الدين الابتدائي (IQD)</label>
+          <input type="number" id="addDebt" placeholder="0" value="0">
+        </div>
+        <div class="field">
+          <label>تاريخ الاستحقاق (اختياري)</label>
+          <input type="date" id="addDue">
+        </div>
+      </div>
+      <div class="field">
+        <label>ملاحظات</label>
+        <textarea id="addNote" rows="2" placeholder="اختياري"></textarea>
+      </div>
+      <button class="btn primary" onclick="saveNewClient()">حفظ العميل</button>
+    </div>
+  </div>
+
+  <!-- ===================== TXN SHEET (payment/debt) ===================== -->
+  <div class="overlay" id="overlay-txn">
+    <div class="sheet sheet-wrap">
+      <button class="close-x" onclick="closeOverlay('overlay-txn')">✕</button>
+      <h3 id="txnTitle">تسجيل دفعة</h3>
+      <div class="field">
+        <label>المبلغ (IQD) *</label>
+        <input type="number" id="txnAmount" placeholder="0">
+      </div>
+      <div class="field">
+        <label>التاريخ</label>
+        <input type="date" id="txnDate">
+      </div>
+      <div class="field">
+        <label>ملاحظة</label>
+        <input type="text" id="txnNote" placeholder="اختياري">
+      </div>
+      <button class="btn primary" id="txnSaveBtn" onclick="saveTxn()">حفظ</button>
+    </div>
+  </div>
+
+  <!-- ===================== EDIT CLIENT SHEET ===================== -->
+  <div class="overlay" id="overlay-edit">
+    <div class="sheet sheet-wrap">
+      <button class="close-x" onclick="closeOverlay('overlay-edit')">✕</button>
+      <h3>تعديل بيانات العميل</h3>
+      <div class="field">
+        <label>اسم العميل *</label>
+        <input type="text" id="editName">
+      </div>
+      <div class="field">
+        <label>رقم الهاتف</label>
+        <input type="tel" id="editPhone">
+      </div>
+      <div class="field">
+        <label>ملاحظات</label>
+        <textarea id="editNote" rows="2"></textarea>
+      </div>
+      <button class="btn primary" onclick="saveEditClient()">حفظ التعديلات</button>
+    </div>
+  </div>
+
+  <!-- ===================== CALCULATOR SHEET ===================== -->
+  <div class="overlay" id="overlay-calc">
+    <div class="sheet sheet-wrap">
+      <button class="close-x" onclick="closeOverlay('overlay-calc')">✕</button>
+      <h3>الحاسبة</h3>
+      <div class="calc-display" id="calcDisplay">0</div>
+      <div class="calc-grid" id="calcGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===================== MENU SHEET ===================== -->
+  <div class="overlay" id="overlay-menu">
+    <div class="sheet sheet-wrap">
+      <button class="close-x" onclick="closeOverlay('overlay-menu')">✕</button>
+      <h3>القائمة — MAHER DELI</h3>
+      <button class="btn outline" onclick="exportData()">⬇️ تصدير نسخة احتياطية (JSON)</button>
+      <div style="height:10px;"></div>
+      <label class="btn outline" style="display:block; text-align:center; cursor:pointer;">
+        ⬆️ استيراد نسخة احتياطية
+        <input type="file" id="importFile" accept="application/json" style="display:none;" onchange="importData(event)">
+      </label>
+      <div style="height:10px;"></div>
+      <button class="btn danger" onclick="wipeAllData()">🗑️ حذف جميع البيانات</button>
+      <p style="text-align:center; color:#94a3b8; font-size:.75rem; margin-top:18px;">MAHER DELI — إدارة الديون<br>يعمل بالكامل دون اتصال بالإنترنت</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
